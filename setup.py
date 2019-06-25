@@ -24,7 +24,12 @@ setup(
     author='Rehive',
     author_email='info@rehive.com',
     license='MIT',
-    install_requires=["Django>=2.0"],
+    install_requires=[
+        "Django>=2.0",
+        "djangorestframework>=3.9",
+        "drf-flex-fields>=0.3",
+        "django-filter>=2.0",
+    ],
     python_requires='>=3.4',
     classifiers=[
         'Framework :: Django',
