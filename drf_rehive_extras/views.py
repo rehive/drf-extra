@@ -1,6 +1,6 @@
 from django.utils.translation import ugettext as _
 from rest_framework.generics import GenericAPIView
-from drf_extra.mixins import *
+from .mixins import *
 
 
 class BaseAPIView(GenericAPIView):

@@ -1,7 +1,7 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
-from drf_extra.pagination import PageNumberPagination, CursorPagination
+from .pagination import PageNumberPagination, CursorPagination
 
 
 class CreateModelMixin(object):
