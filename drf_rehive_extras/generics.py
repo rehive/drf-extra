@@ -1,6 +1,7 @@
 from django.utils.translation import ugettext as _
 from rest_framework.generics import GenericAPIView
-from .mixins import *
+
+from . import mixins
 
 
 class BaseAPIView(GenericAPIView):
@@ -26,7 +27,7 @@ class BaseAPIView(GenericAPIView):
             return super().get_serializer_class()
 
 
-class CreateAPIView(CreateModelMixin,
+class CreateAPIView(mixins.CreateModelMixin,
                     BaseAPIView):
     """
     Concrete view for creating a model instance.
@@ -36,7 +37,7 @@ class CreateAPIView(CreateModelMixin,
         return self.create(request, *args, **kwargs)
 
 
-class ListAPIView(ListModelMixin,
+class ListAPIView(mixins.ListModelMixin,
                   BaseAPIView):
     """
     Concrete view for listing a queryset.
@@ -46,8 +47,40 @@ class ListAPIView(ListModelMixin,
         return self.list(request, *args, **kwargs)
 
 
-class ListCreateAPIView(ListModelMixin,
-                        CreateModelMixin,
+class RetrieveAPIView(mixins.RetrieveModelMixin,
+                      BaseAPIView):
+    """
+    Concrete view for retrieving a model instance.
+    """
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+
+class DestroyAPIView(mixins.DestroyModelMixin,
+                     BaseAPIView):
+    """
+    Concrete view for deleting a model instance.
+    """
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
+
+
+class UpdateAPIView(mixins.UpdateModelMixin,
+                    BaseAPIView):
+    """
+    Concrete view for updating a model instance.
+    """
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+
+
+class ListCreateAPIView(mixins.ListModelMixin,
+                        mixins.CreateModelMixin,
                         BaseAPIView):
     """
     Concrete view for listing a queryset or creating a model instance.
@@ -60,8 +93,8 @@ class ListCreateAPIView(ListModelMixin,
         return self.create(request, *args, **kwargs)
 
 
-class RetrieveUpdateAPIView(RetrieveModelMixin,
-                            UpdateModelMixin,
+class RetrieveUpdateAPIView(mixins.RetrieveModelMixin,
+                            mixins.UpdateModelMixin,
                             BaseAPIView):
     """
     Concrete view for retrieving and updating a model instance.
@@ -77,8 +110,8 @@ class RetrieveUpdateAPIView(RetrieveModelMixin,
         return self.partial_update(request, *args, **kwargs)
 
 
-class RetrieveDestroyAPIView(RetrieveModelMixin,
-                             DestroyModelMixin,
+class RetrieveDestroyAPIView(mixins.RetrieveModelMixin,
+                             mixins.DestroyModelMixin,
                              BaseAPIView):
     """
     Concrete view for retrieving and deleting a model instance.
@@ -91,9 +124,9 @@ class RetrieveDestroyAPIView(RetrieveModelMixin,
         return self.destroy(request, *args, **kwargs)
 
 
-class RetrieveUpdateDestroyAPIView(RetrieveModelMixin,
-                                   UpdateModelMixin,
-                                   DestroyModelMixin,
+class RetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
+                                   mixins.UpdateModelMixin,
+                                   mixins.DestroyModelMixin,
                                    BaseAPIView):
     """
     Concrete view for retrieving, updating and deleting a model instance.
@@ -107,26 +140,6 @@ class RetrieveUpdateDestroyAPIView(RetrieveModelMixin,
 
     def patch(self, request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
-
-    def delete(self, request, *args, **kwargs):
-        return self.destroy(request, *args, **kwargs)
-
-
-class RetrieveAPIView(RetrieveModelMixin,
-                      BaseAPIView):
-    """
-    Concrete view for retrieving a model instance.
-    """
-
-    def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
-
-
-class DestroyAPIView(DestroyModelMixin,
-                     BaseAPIView):
-    """
-    Concrete view for deleting a model instance.
-    """
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)

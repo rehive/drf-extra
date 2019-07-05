@@ -11,4 +11,4 @@ class DestroyModelSerializer():
     """
 
     def destroy(self):
-		self.instance.delete()
+        self.instance.delete()

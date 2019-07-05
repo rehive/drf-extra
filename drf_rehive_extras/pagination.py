@@ -20,7 +20,9 @@ class PageNumberPagination(RestPageNumberPagination):
             ('results', data)
         ])
 
-        return Response(OrderedDict([('status', 'success'), ('data', response)]))
+        return Response(
+            OrderedDict([('status', 'success'), ('data', response)])
+        )
 
 
 class CursorPagination(RestCursorPagination):
@@ -35,4 +37,6 @@ class CursorPagination(RestCursorPagination):
             ('results', data)
         ])
 
-        return Response(OrderedDict([('status', 'success'), ('data', response)]))
+        return Response(
+            OrderedDict([('status', 'success'), ('data', response)])
+        )

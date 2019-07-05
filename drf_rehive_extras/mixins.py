@@ -1,10 +1,12 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
+from django_filters.rest_framework import DjangoFilterBackend
+
 from .pagination import PageNumberPagination, CursorPagination
 
 
-class CreateModelMixin(object):
+class CreateModelMixin:
     """
     Create a model instance.
     """
@@ -21,6 +23,7 @@ class CreateModelMixin(object):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
+
         _return_serializer = kwargs.get('return_serializer')
         data = _return_serializer(
             serializer.instance, context={'request': request}
@@ -42,7 +45,7 @@ class CreateModelMixin(object):
             return {}
 
 
-class ListModelMixin(object):
+class ListModelMixin:
     """
     List a queryset.
     """
@@ -80,7 +83,7 @@ class ListModelMixin(object):
         return Response({'status': 'success', 'data': serializer.data})
 
 
-class RetrieveModelMixin(object):
+class RetrieveModelMixin:
     """
     Retrieve a model instance.
     """
@@ -91,7 +94,7 @@ class RetrieveModelMixin(object):
         return Response({'status': 'success', 'data': serializer.data})
 
 
-class UpdateModelMixin(object):
+class UpdateModelMixin:
     """
     Update a model instance.
     """
@@ -126,7 +129,7 @@ class UpdateModelMixin(object):
         return self.update(request, *args, **kwargs)
 
 
-class DestroyModelMixin(object):
+class DestroyModelMixin:
     """
     Destroy a model instance.
     """
