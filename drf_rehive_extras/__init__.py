@@ -1,1 +1,1 @@
-default_app_config = 'drf_extra.apps.DRFExtraConfig'
+default_app_config = 'drf_rehive_extras.apps.DRFExtraConfig'
