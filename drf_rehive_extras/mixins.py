@@ -26,7 +26,7 @@ class CreateModelMixin:
 
         _return_serializer = kwargs.get('return_serializer')
         data = _return_serializer(
-            serializer.instance, context={'request': request}
+            serializer.instance, context=self.get_serializer_context()
         ).data if _return_serializer else serializer.data
 
         return Response(
@@ -116,7 +116,7 @@ class UpdateModelMixin:
 
         _return_serializer = kwargs.get('return_serializer')
         data = _return_serializer(
-            serializer.instance, context={'request': request}
+            serializer.instance, context=self.get_serializer_context()
         ).data if _return_serializer else serializer.data
 
         return Response({'status': 'success', 'data': data})
