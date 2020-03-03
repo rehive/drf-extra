@@ -29,6 +29,13 @@ class CreateModelMixin:
             serializer.instance, context=self.get_serializer_context()
         ).data if _return_serializer else serializer.data
 
+        # Get the resource and resource ID information if available.
+        try:
+            request._resource = serializer.instance.get_resource()
+            request._resource_id = serializer.instance.get_resource_id()
+        except AttributeError:
+            pass
+
         return Response(
             {'status': 'success', 'data': data},
             status=kwargs.get('return_status_code', status.HTTP_201_CREATED),
@@ -91,6 +98,14 @@ class RetrieveModelMixin:
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
+
+        # Get the resource and resource ID information if available.
+        try:
+            request._resource = serializer.instance.get_resource()
+            request._resource_id = serializer.instance.get_resource_id()
+        except AttributeError:
+            pass
+
         return Response({'status': 'success', 'data': serializer.data})
 
 
@@ -113,6 +128,13 @@ class UpdateModelMixin:
         )
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
+
+        # Get the resource and resource ID information if available.
+        try:
+            request._resource = serializer.instance.get_resource()
+            request._resource_id = serializer.instance.get_resource_id()
+        except AttributeError:
+            pass
 
         _return_serializer = kwargs.get('return_serializer')
         data = _return_serializer(
@@ -137,6 +159,14 @@ class DestroyModelMixin:
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data)
+
+        # Get the resource and resource ID information if available.
+        try:
+            request._resource = serializer.instance.get_resource()
+            request._resource_id = serializer.instance.get_resource_id()
+        except AttributeError:
+            pass
+
         self.perform_destroy(serializer)
         return Response(
             data={'status': 'success'},
