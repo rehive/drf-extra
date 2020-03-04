@@ -6,6 +6,30 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .pagination import PageNumberPagination, CursorPagination
 
 
+def add_resource_data(request, instance):
+    """
+    Helper function to add resource infomation to the request. This info can
+    be used later on in the view context.
+
+    The resource data is populated with the single instance that is created,
+    updated or deleted (and does not include other resources modifed as a
+    result).
+
+    Resource data will only be populated if a RESOURCE and/or RESOURCE_ID is
+    available on the specific model instance.
+    """
+
+    resource = getattr(instance, "RESOURCE", None)
+    if not resource:
+        return
+
+    request._resource = resource
+
+    resource_id = getattr(instance, "RESOURCE_ID", None)
+    if resource_id:
+        request._resource_id = str(resource_id)
+
+
 class CreateModelMixin:
     """
     Create a model instance.
@@ -28,13 +52,7 @@ class CreateModelMixin:
         data = _return_serializer(
             serializer.instance, context=self.get_serializer_context()
         ).data if _return_serializer else serializer.data
-
-        # Get the resource and resource ID information if available.
-        try:
-            request._resource = serializer.instance.get_resource()
-            request._resource_id = serializer.instance.get_resource_id()
-        except AttributeError:
-            pass
+        populate_resource_data(request, serializer.instance)
 
         return Response(
             {'status': 'success', 'data': data},
@@ -98,14 +116,7 @@ class RetrieveModelMixin:
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
-
-        # Get the resource and resource ID information if available.
-        try:
-            request._resource = serializer.instance.get_resource()
-            request._resource_id = serializer.instance.get_resource_id()
-        except AttributeError:
-            pass
-
+        populate_resource_data(request, serializer.instance)
         return Response({'status': 'success', 'data': serializer.data})
 
 
@@ -128,13 +139,7 @@ class UpdateModelMixin:
         )
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
-
-        # Get the resource and resource ID information if available.
-        try:
-            request._resource = serializer.instance.get_resource()
-            request._resource_id = serializer.instance.get_resource_id()
-        except AttributeError:
-            pass
+        populate_resource_data(request, serializer.instance)
 
         _return_serializer = kwargs.get('return_serializer')
         data = _return_serializer(
@@ -159,18 +164,11 @@ class DestroyModelMixin:
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data)
-
-        # Get the resource and resource ID information if available.
-        try:
-            request._resource = serializer.instance.get_resource()
-            request._resource_id = serializer.instance.get_resource_id()
-        except AttributeError:
-            pass
-
+        populate_resource_data(request, serializer.instance)
         self.perform_destroy(serializer)
         return Response(
-            data={'status': 'success'},
-            status=status.HTTP_200_OK)
+            data={'status': 'success'}, status=status.HTTP_200_OK
+        )
 
     def perform_destroy(self, serializer):
         serializer.destroy()
