@@ -19,14 +19,14 @@ def add_resource_data(request, instance):
     available on the specific model instance.
     """
 
-    resource = getattr(instance, "RESOURCE", None)
+    resource = getattr(instance, "RESOURCE")
     if not resource:
         return
 
     request._resource = resource
 
-    resource_id = getattr(instance, "RESOURCE_ID", None)
-    if resource_id:
+    field = getattr(instance, "RESOURCE_ID")
+    if field and getattr(instance, field):
         request._resource_id = str(resource_id)
 
 
