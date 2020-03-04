@@ -19,15 +19,20 @@ def add_resource_data(request, instance):
     available on the specific model instance.
     """
 
-    resource = getattr(instance, "RESOURCE")
-    if not resource:
+    try:
+        resource = getattr(instance, "RESOURCE")
+    except AttributeError:
         return
 
     request._resource = resource
 
-    field = getattr(instance, "RESOURCE_ID")
-    if field and getattr(instance, field):
-        request._resource_id = str(resource_id)
+    try:
+        field = getattr(instance, "RESOURCE_ID")
+        resource_id = getattr(instance, field)
+    except AttributeError:
+        return
+
+    request._resource_id = str(resource_id)
 
 
 class CreateModelMixin:
@@ -52,7 +57,7 @@ class CreateModelMixin:
         data = _return_serializer(
             serializer.instance, context=self.get_serializer_context()
         ).data if _return_serializer else serializer.data
-        populate_resource_data(request, serializer.instance)
+        add_resource_data(request, serializer.instance)
 
         return Response(
             {'status': 'success', 'data': data},
@@ -116,7 +121,7 @@ class RetrieveModelMixin:
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
-        populate_resource_data(request, serializer.instance)
+        add_resource_data(request, serializer.instance)
         return Response({'status': 'success', 'data': serializer.data})
 
 
@@ -139,7 +144,7 @@ class UpdateModelMixin:
         )
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
-        populate_resource_data(request, serializer.instance)
+        add_resource_data(request, serializer.instance)
 
         _return_serializer = kwargs.get('return_serializer')
         data = _return_serializer(
@@ -164,7 +169,7 @@ class DestroyModelMixin:
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data)
-        populate_resource_data(request, serializer.instance)
+        add_resource_data(request, serializer.instance)
         self.perform_destroy(serializer)
         return Response(
             data={'status': 'success'}, status=status.HTTP_200_OK
