@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 
 from django.utils.translation import ugettext_lazy as _
@@ -12,11 +13,26 @@ class MetadataField(serializers.JSONField):
     def to_internal_value(self, data):
         data = super().to_internal_value(data)
 
-        if data is None or isinstance(data, dict):
-            return data
-        else:
+        if data is None or not isinstance(data, dict):
             raise serializers.ValidationError(
                 _('Invalid metadata. Must be a valid object.'))
+
+        def _validate(obj):
+            if not isinstance(obj, dict):
+                return
+
+            for k, v in obj.items():
+                if (not re.match(r"^[a-z0-9\_]+$", k) or "__" in k):
+                    raise serializers.ValidationError(
+                        _("Invalid metadata key. May only contain lowercase"
+                          " alphanumeric characters, numbers and single"
+                          " underscores.")
+                    )
+                _validate(v)
+
+        _validate(data)
+
+        return data
 
 
 class TimestampField(serializers.Field):
