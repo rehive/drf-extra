@@ -22,11 +22,10 @@ class MetadataField(serializers.JSONField):
                 return
 
             for k, v in obj.items():
-                if (not re.match(r"^[a-z0-9\_]+$", k) or "__" in k):
+                if (not re.match(r"^[a-zA-Z0-9\_]+$", k) or "__" in k):
                     raise serializers.ValidationError(
-                        _("Invalid metadata key. May only contain lowercase"
-                          " alphanumeric characters, numbers and single"
-                          " underscores.")
+                        _("Invalid metadata key. May only contain alphanumeric"
+                          " characters, numbers and single underscores.")
                     )
                 _validate(v)
 
