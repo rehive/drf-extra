@@ -57,3 +57,20 @@ class TimestampField(serializers.Field):
                 _('Incorrect date format, expected ISO 8601.'))
 
         return datetime.fromtimestamp(int(date))
+
+
+class EnumField(serializers.ChoiceField):
+    def __init__(self, enum, **kwargs):
+        self.enum = enum
+        kwargs['choices'] = [(e.value, e.label) for e in enum]
+        super().__init__(**kwargs)
+    def to_representation(self, obj):
+        try:
+            return obj.value
+        except AttributeError:
+            return obj
+    def to_internal_value(self, data):
+        try:
+            return self.enum(data)
+        except ValueError:
+            self.fail('invalid_choice', input=data)
