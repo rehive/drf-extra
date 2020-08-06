@@ -1,5 +1,6 @@
 import re
 from datetime import datetime
+from django.utils.timezone import make_aware
 
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
@@ -51,12 +52,11 @@ class TimestampField(serializers.Field):
 
     def to_internal_value(self, obj):
         try:
-            date = datetime.strptime(str(obj), '%Y-%m-%dT%H:%M:%SZ').timestamp()
+            date = int(obj) / int(self.multiplier)
         except ValueError:
-            raise serializers.ValidationError(
-                _('Incorrect date format, expected ISO 8601.'))
+            _('Incorrect date format, must be a valid unix timestamp.')
 
-        return datetime.fromtimestamp(int(date))
+        return make_aware(datetime.fromtimestamp(int(date)))
 
 
 class EnumField(serializers.ChoiceField):
