@@ -56,7 +56,7 @@ class TimestampField(serializers.Field):
         except ValueError:
             _('Incorrect date format, must be a valid unix timestamp.')
 
-        return make_aware(datetime.fromtimestamp(int(date)))
+        return make_aware(datetime.fromtimestamp(date))
 
 
 class EnumField(serializers.ChoiceField):
