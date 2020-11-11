@@ -16,7 +16,8 @@ class MetadataField(serializers.JSONField):
 
         if data is None or not isinstance(data, dict):
             raise serializers.ValidationError(
-                _('Invalid metadata. Must be a valid object.'))
+                _('Invalid metadata. Must be a valid object.')
+            )
 
         def _validate(obj):
             if not isinstance(obj, dict):
@@ -54,21 +55,30 @@ class TimestampField(serializers.Field):
         try:
             date = int(obj) / int(self.multiplier)
         except ValueError:
-            _('Incorrect date format, must be a valid unix timestamp.')
+            raise serializers.ValidationError(
+                _("Incorrect date format, must be a valid millisecond"
+                  " timestamp.")
+            )
 
         return make_aware(datetime.fromtimestamp(date))
 
 
 class EnumField(serializers.ChoiceField):
+    """
+    Enum field for multiple choice enum values.
+    """
+
     def __init__(self, enum, **kwargs):
         self.enum = enum
         kwargs['choices'] = [(e.value, e.label) for e in enum]
         super().__init__(**kwargs)
+
     def to_representation(self, obj):
         try:
             return obj.value
         except AttributeError:
             return obj
+
     def to_internal_value(self, data):
         try:
             return self.enum(data)
