@@ -83,23 +83,31 @@ class ListModelMixin:
     filter_backends = (DjangoFilterBackend,)
     pagination_class = PageNumberPagination
 
-    def paginate_queryset(self, queryset):
-        """
-        Allow pagination to be overided via query params. Defaults to page
-        number pagination.
-        """
-
+    def get_pagination_class(self):
         paginator_name = self.request.GET.get('pagination')
 
         try:
-            self.pagination_class = {
+            return {
                 "page": PageNumberPagination,
                 "cursor": CursorPagination
             }[paginator_name]
         except KeyError:
-            pass
+            return self.pagination_class
 
-        return super().paginate_queryset(queryset)
+    @property
+    def paginator(self):
+        """
+        Allow pagination to be overided via query params.
+        """
+
+        if not hasattr(self, '_paginator'):
+            pagination_class = self.get_pagination_class()
+            if pagination_class is None:
+                self._paginator = None
+            else:
+                self._paginator = pagination_class()
+
+        return self._paginator
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
