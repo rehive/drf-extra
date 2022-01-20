@@ -7,8 +7,8 @@
 
 ## Features
 
-- Python 3.6
-- Django 2.2.13
+- Python >= 3.6
+- Django >= 3.0
 - Generic views and mixins for all CRUD.
 - Custom pagination that supports cursor and page based pagination.
 - Integrated support for flex fields and django filters.
