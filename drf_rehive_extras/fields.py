@@ -68,14 +68,14 @@ class EnumField(serializers.ChoiceField):
     Enum field for multiple choice enum values.
     """
 
-    def __init__(self, enum, **kwargs):
+    def __init__(self, enum, choices=None, **kwargs):
         self.enum = enum
-        kwargs['choices'] = [(e.value, e.label) for e in enum]
+        kwargs['choices'] = choices if choices else enum.choices()
         super().__init__(**kwargs)
 
     def to_representation(self, obj):
         try:
-            return obj.value
+            return self.enum(obj).value
         except AttributeError:
             return obj
 
