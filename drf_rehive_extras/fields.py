@@ -75,7 +75,7 @@ class EnumField(serializers.ChoiceField):
 
     def to_representation(self, obj):
         try:
-            return self.enum(obj).value
+            return obj.value
         except AttributeError:
             return obj
 
