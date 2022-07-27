@@ -1,8 +1,8 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
-from django_filters.rest_framework import DjangoFilterBackend
 
+from .filter_backend import RehiveRestFilterBackend
 from .pagination import PageNumberPagination, CursorPagination
 
 
@@ -80,7 +80,7 @@ class ListModelMixin:
     List a queryset.
     """
 
-    filter_backends = (DjangoFilterBackend,)
+    filter_backends = (RehiveRestFilterBackend,)
     pagination_class = PageNumberPagination
 
     def get_pagination_class(self):
