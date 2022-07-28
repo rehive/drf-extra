@@ -6,6 +6,8 @@ from django_filters import rest_framework as filters
 class RehiveRestFilterBackend(filters.DjangoFilterBackend):
     def get_ordering(self, request, queryset, view):
         default_ordering = getattr(view, 'ordering_fields', '-created')
+        ordering_lookup_fields = tuple(getattr(
+            view, 'ordering_lookup_fields', ('created', 'updated')))
         orderby_key = getattr(view, 'orderby_key', 'orderby')
         orderby_value = self.get_filterset_kwargs(
             request, queryset, view)['data'].get(orderby_key, None)
@@ -19,5 +21,5 @@ class RehiveRestFilterBackend(filters.DjangoFilterBackend):
             OrderedDict(orderby_key=orderby_value)
         ).get_ordering_value(orderby_value)
 
-        return ordering if ordering[0].lstrip('-') in ['created', 'updated'] \
+        return ordering if ordering[0].lstrip('-') in ordering_lookup_fields \
             else default_ordering
