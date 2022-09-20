@@ -1,5 +1,7 @@
 import re
 from datetime import datetime
+from functools import reduce
+
 from django.utils.timezone import make_aware
 
 from django.utils.translation import gettext_lazy as _
@@ -81,7 +83,10 @@ class EnumField(serializers.ChoiceField):
 
     def to_internal_value(self, data):
         try:
-            if not self.choices.get(data):
+            # Check if the data is present inside self.choices
+            if not (any(
+                    self.enum(key) == self.enum(data) for key
+                    in self.choices.keys())):
                 raise ValueError
             return self.enum(data)
         except ValueError:
