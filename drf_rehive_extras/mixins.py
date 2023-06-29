@@ -60,10 +60,7 @@ class CreateModelMixin:
 
         # Handle the response serialization. Sometimes the serialization of
         # responses should be different from the request serialization.
-        response_serializer = self.get_response_serializer()
-        data = response_serializer(
-            serializer.instance, context=self.get_serializer_context()
-        ).data if response_serializer else serializer.data
+        data = self.get_response_serializer(serializer.instance).data
 
         return Response(
             data={'status': 'success', 'data': data},
@@ -203,10 +200,7 @@ class UpdateModelMixin:
 
         # Handle the response serialization. Sometimes the serialization of
         # responses should be different from the request serialization.
-        response_serializer = self.get_response_serializer()
-        data = response_serializer(
-            serializer.instance, context=self.get_serializer_context()
-        ).data if response_serializer else serializer.data
+        data = self.get_response_serializer(serializer.instance).data
 
         return Response(
             data={'status': 'success', 'data': data},
