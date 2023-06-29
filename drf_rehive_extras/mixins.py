@@ -245,7 +245,7 @@ class DestroyModelMixin:
 
         return Response(
             data={'status': 'success'},
-            status=self.get_response_status_code(status.HTTP_204_NO_CONTENT)
+            status=self.get_response_status_code(status.HTTP_200_OK)
         )
 
     def perform_destroy(self, serializer):
