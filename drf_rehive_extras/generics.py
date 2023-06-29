@@ -10,21 +10,77 @@ class BaseAPIView(GenericAPIView):
     extend this class.
     """
 
-    # Store serializer classes used by the view based on the request method
-    # This dict should take the request method type ("POST", ...) as key
-    # and a serializer class a value.
+    # Modify serializer classes used by the view based on the request method.
+    # This attribute can take two formats:
+    #  - {"GET": ObjectSerializer}
+    #  - {"GET": (RequestObjectSerializer, ResponseObjectSerializer,)}
     serializer_classes = {}
+
+    # Modify statuses used by the view based on the request method.
+    # This attributes can take the following format:
+    #  - `{"GET": status.HTTP_200_OK}`
+    response_status_codes = {}
 
     def get_serializer_class(self):
         """
-        `get_serializer_class` will first try to retrieve the serializer class
-        from the `serializer_classes` dict based on the request method and if
-        a serializer class is not set it will call the super.
+        Retrieve the request serializer class for the view.
+
+        If the item returned from the serializer_classes is a tuple or list then
+        get the first class.
         """
+
         try:
-            return self.serializer_classes[self.request.method]
+            c = self.serializer_classes[self.request.method]
         except KeyError:
             return super().get_serializer_class()
+
+        if isinstance(c, (tuple, list)) and len(c) >= 1:
+            return c[0]
+        else:
+            return c
+
+    def get_response_serializer_class(self):
+        """
+        Retrieve the response serializer class for the view.
+
+        If the item returned from the serializer_classes is a tuple or list then
+        get the second class if possible, otherwise get the first class.
+        """
+
+        try:
+            c = self.serializer_classes[self.request.method]
+        except KeyError:
+            return super().get_serializer_class()
+
+        if isinstance(c, (tuple, list)) and len(c) >= 1:
+            try:
+                return c[1]
+            except KeyError:
+                return c[0]
+        else:
+            return c
+
+    def get_response_serializer(self, *args, **kwargs):
+        """
+        Get the response serializer. Uses the custom
+        `get_response_serializer_class` instead of the default
+        `get_serializer_class`.
+        """
+
+        serializer_class = self.get_response_serializer_class()
+        kwargs.setdefault('context', self.get_serializer_context())
+        return serializer_class(*args, **kwargs)
+
+    def get_response_status_code(self, default):
+        """
+        Get the response status code. Will use a custom one if one exists for
+        the method.
+        """
+
+        try:
+            return self.response_status_codes[self.request.method]
+        except KeyError:
+            return default
 
 
 class CreateAPIView(mixins.CreateModelMixin,

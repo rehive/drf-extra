@@ -47,7 +47,7 @@ class CreateModelMixin:
         Handle object creation on the view.
         """
 
-        # Handle serialization and update.
+        # Handle the request serialization and creation.
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
@@ -59,15 +59,15 @@ class CreateModelMixin:
         headers = self.get_success_headers(serializer.data)
 
         # Handle the response serialization. Sometimes the serialization of
-        # responses should be different from the create serialization.
-        _return_serializer = kwargs.get('return_serializer')
-        data = _return_serializer(
+        # responses should be different from the request serialization.
+        response_serializer = self.get_response_serializer()
+        data = response_serializer(
             serializer.instance, context=self.get_serializer_context()
-        ).data if _return_serializer else serializer.data
+        ).data if response_serializer else serializer.data
 
         return Response(
-            {'status': 'success', 'data': data},
-            status=kwargs.get('return_status_code', status.HTTP_201_CREATED),
+            data={'status': 'success', 'data': data},
+            status=self.get_response_status_code(status.HTTP_201_CREATED),
             headers=headers
         )
 
@@ -144,7 +144,10 @@ class ListModelMixin:
         # Handle serialization.
         serializer = self.get_serializer(queryset, many=True)
 
-        return Response({'status': 'success', 'data': serializer.data})
+        return Response(
+            data={'status': 'success', 'data': serializer.data},
+            status=self.get_response_status_code(status.HTTP_200_OK)
+        )
 
 
 class RetrieveModelMixin:
@@ -166,7 +169,10 @@ class RetrieveModelMixin:
         # Handle serialization.
         serializer = self.get_serializer(instance)
 
-        return Response({'status': 'success', 'data': serializer.data})
+        return Response(
+            data={'status': 'success', 'data': serializer.data},
+            status=self.get_response_status_code(status.HTTP_200_OK)
+        )
 
 
 class UpdateModelMixin:
@@ -176,7 +182,7 @@ class UpdateModelMixin:
 
     def update(self, request, *args, **kwargs):
         """
-        Hanlde object update on the view.
+        Handle object update on the view.
         """
 
         # Find out whether this is a partial (PATCH) or full (PUT) update.
@@ -196,13 +202,16 @@ class UpdateModelMixin:
         self.perform_update(serializer)
 
         # Handle the response serialization. Sometimes the serialization of
-        # responses should be different from the update serialization.
-        _return_serializer = kwargs.get('return_serializer')
-        data = _return_serializer(
+        # responses should be different from the request serialization.
+        response_serializer = self.get_response_serializer()
+        data = response_serializer(
             serializer.instance, context=self.get_serializer_context()
-        ).data if _return_serializer else serializer.data
+        ).data if response_serializer else serializer.data
 
-        return Response({'status': 'success', 'data': data})
+        return Response(
+            data={'status': 'success', 'data': data},
+            status=self.get_response_status_code(status.HTTP_200_OK),
+        )
 
     def perform_update(self, serializer):
         """
@@ -241,7 +250,8 @@ class DestroyModelMixin:
         self.perform_destroy(serializer)
 
         return Response(
-            data={'status': 'success'}, status=status.HTTP_200_OK
+            data={'status': 'success'},
+            status=self.get_response_status_code(status.HTTP_204_NO_CONTENT)
         )
 
     def perform_destroy(self, serializer):
