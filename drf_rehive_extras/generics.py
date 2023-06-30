@@ -21,7 +21,7 @@ class BaseAPIView(GenericAPIView):
     # Modify the statuses used by the view based on the request method.
     # This attributes can take the following format:
     #  - `{"GET": status.HTTP_200_OK}`
-    response_status_codes ={}
+    response_status_codes = {}
 
     # The default statuses used by the view based on the request method.
     default_response_status_codes = {
