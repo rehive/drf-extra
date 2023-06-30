@@ -1,4 +1,5 @@
 from django.utils.translation import gettext_lazy as _
+from rest_framework import status
 from rest_framework.generics import GenericAPIView
 
 from . import mixins
@@ -20,6 +21,9 @@ class BaseAPIView(GenericAPIView):
     # This attributes can take the following format:
     #  - `{"GET": status.HTTP_200_OK}`
     response_status_codes = {}
+
+    # Modify the default status code.
+    response_status_code = status.HTTP_200_OK
 
     def get_serializer_class(self):
         """
@@ -71,16 +75,15 @@ class BaseAPIView(GenericAPIView):
         kwargs.setdefault('context', self.get_serializer_context())
         return serializer_class(*args, **kwargs)
 
-    def get_response_status_code(self, default):
+    def get_response_status_code(self):
         """
-        Get the response status code. Will use a custom one if one exists for
-        the method.
+        Get the response status code.
         """
 
         try:
             return self.response_status_codes[self.request.method]
         except KeyError:
-            return default
+            return self.response_status_code
 
 
 class CreateAPIView(mixins.CreateModelMixin,
@@ -88,6 +91,9 @@ class CreateAPIView(mixins.CreateModelMixin,
     """
     Concrete view for creating a model instance.
     """
+
+    # Modify the default status code.
+    response_status_code = status.HTTP_201_CREATED
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)

@@ -64,7 +64,7 @@ class CreateModelMixin:
 
         return Response(
             data={'status': 'success', 'data': data},
-            status=self.get_response_status_code(status.HTTP_201_CREATED),
+            status=self.get_response_status_code(),
             headers=headers
         )
 
@@ -143,7 +143,7 @@ class ListModelMixin:
 
         return Response(
             data={'status': 'success', 'data': serializer.data},
-            status=self.get_response_status_code(status.HTTP_200_OK)
+            status=self.get_response_status_code()
         )
 
 
@@ -168,7 +168,7 @@ class RetrieveModelMixin:
 
         return Response(
             data={'status': 'success', 'data': serializer.data},
-            status=self.get_response_status_code(status.HTTP_200_OK)
+            status=self.get_response_status_code()
         )
 
 
@@ -204,7 +204,7 @@ class UpdateModelMixin:
 
         return Response(
             data={'status': 'success', 'data': data},
-            status=self.get_response_status_code(status.HTTP_200_OK),
+            status=self.get_response_status_code(),
         )
 
     def perform_update(self, serializer):
@@ -245,7 +245,7 @@ class DestroyModelMixin:
 
         return Response(
             data={'status': 'success'},
-            status=self.get_response_status_code(status.HTTP_200_OK)
+            status=self.get_response_status_code()
         )
 
     def perform_destroy(self, serializer):
