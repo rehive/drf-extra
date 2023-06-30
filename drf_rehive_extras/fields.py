@@ -38,7 +38,7 @@ class MetadataField(serializers.JSONField):
         return data
 
 
-class TimestampField(serializers.Field):
+class TimestampField(serializers.IntegerField):
     """
     Timestamp field for datetime serialization.
     """
