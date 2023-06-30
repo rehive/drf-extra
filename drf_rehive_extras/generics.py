@@ -92,9 +92,6 @@ class CreateAPIView(mixins.CreateModelMixin,
     Concrete view for creating a model instance.
     """
 
-    # Modify the default status code.
-    response_status_code = status.HTTP_201_CREATED
-
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
 

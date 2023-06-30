@@ -42,6 +42,9 @@ class CreateModelMixin:
     Create a model instance.
     """
 
+    # Modify the default status code.
+    response_status_code = status.HTTP_201_CREATED
+
     def create(self, request, *args, **kwargs):
         """
         Handle object creation on the view.
