@@ -11,19 +11,29 @@ class BaseAPIView(GenericAPIView):
     extend this class.
     """
 
-    # Modify serializer classes used by the view based on the request method.
+    # Modify the serializer classes used by the view based on the request
+    # method.
     # This attribute can take two formats:
     #  - {"GET": ObjectSerializer}
     #  - {"GET": (RequestObjectSerializer, ResponseObjectSerializer,)}
     serializer_classes = {}
 
-    # Modify statuses used by the view based on the request method.
+    # Modify the statuses used by the view based on the request method.
     # This attributes can take the following format:
     #  - `{"GET": status.HTTP_200_OK}`
-    response_status_codes = {}
+    response_status_codes ={}
 
-    # Modify the default status code.
-    response_status_code = status.HTTP_200_OK
+    # The default statuses used by the view based on the request method.
+    default_response_status_codes = {
+        "GET": status.HTTP_200_OK,
+        "POST": status.HTTP_201_CREATED,
+        "PUT": status.HTTP_200_OK,
+        "PATCH": status.HTTP_200_OK,
+        # NOTE : We use 200 for deletes instead of 204 because the Rehive
+        # response format supports a `status` in the body and by default
+        # 204 expects there to be no response body.
+        "DELETE": status.HTTP_200_OK,
+    }
 
     def get_serializer_class(self):
         """
@@ -83,7 +93,7 @@ class BaseAPIView(GenericAPIView):
         try:
             return self.response_status_codes[self.request.method]
         except KeyError:
-            return self.response_status_code
+            return self.default_response_status_codes[self.request.method]
 
 
 class CreateAPIView(mixins.CreateModelMixin,

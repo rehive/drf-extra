@@ -1,4 +1,3 @@
-from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from django_filters.rest_framework import DjangoFilterBackend
@@ -41,9 +40,6 @@ class CreateModelMixin:
     """
     Create a model instance.
     """
-
-    # Modify the default status code.
-    response_status_code = status.HTTP_201_CREATED
 
     def create(self, request, *args, **kwargs):
         """
