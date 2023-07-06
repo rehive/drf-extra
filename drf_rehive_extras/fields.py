@@ -3,7 +3,6 @@ from datetime import datetime
 from functools import reduce
 
 from django.utils.timezone import make_aware
-
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 

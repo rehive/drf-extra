@@ -1,5 +1,12 @@
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
+from rest_framework.mixins import (
+    CreateModelMixin as DRFCreateModelMixin,
+    ListModelMixin as DRFListModelMixin,
+    RetrieveModelMixin as DRFRetrieveModelMixin,
+    UpdateModelMixin as DRFUpdateModelMixin,
+    DestroyModelMixin as DRFDestroyModelMixin
+)
 from django_filters.rest_framework import DjangoFilterBackend
 
 from .pagination import PageNumberPagination, CursorPagination
@@ -36,7 +43,7 @@ def add_resource_data(request, instance):
         request._resource_id = str(resource_id)
 
 
-class CreateModelMixin:
+class CreateModelMixin(DRFCreateModelMixin):
     """
     Create a model instance.
     """
@@ -67,25 +74,8 @@ class CreateModelMixin:
             headers=headers
         )
 
-    def perform_create(self, serializer):
-        """
-        Perform creation using the serializer.
-        """
 
-        serializer.save()
-
-    def get_success_headers(self, data):
-        """
-        Get special headers for the success response on object creation.
-        """
-
-        try:
-            return {'Location': data[api_settings.URL_FIELD_NAME]}
-        except (TypeError, KeyError):
-            return {}
-
-
-class ListModelMixin:
+class ListModelMixin(DRFListModelMixin):
     """
     List a queryset.
     """
@@ -146,7 +136,7 @@ class ListModelMixin:
         )
 
 
-class RetrieveModelMixin:
+class RetrieveModelMixin(DRFRetrieveModelMixin):
     """
     Retrieve a model instance.
     """
@@ -171,7 +161,7 @@ class RetrieveModelMixin:
         )
 
 
-class UpdateModelMixin:
+class UpdateModelMixin(DRFUpdateModelMixin):
     """
     Update a model instance.
     """
@@ -206,23 +196,8 @@ class UpdateModelMixin:
             status=self.get_response_status_code(),
         )
 
-    def perform_update(self, serializer):
-        """
-        Perform update using the serializer.
-        """
 
-        serializer.save()
-
-    def partial_update(self, request, *args, **kwargs):
-        """
-        Perform a partial update (PATCH).
-        """
-
-        kwargs['partial'] = True
-        return self.update(request, *args, **kwargs)
-
-
-class DestroyModelMixin:
+class DestroyModelMixin(DRFDestroyModelMixin):
     """
     Destroy a model instance.
     """
@@ -246,10 +221,3 @@ class DestroyModelMixin:
             data={'status': 'success'},
             status=self.get_response_status_code()
         )
-
-    def perform_destroy(self, serializer):
-        """
-        Perform destroy using the serializer.
-        """
-
-        serializer.destroy()
