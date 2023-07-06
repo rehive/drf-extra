@@ -215,9 +215,10 @@ class DestroyModelMixin(DRFDestroyModelMixin):
 
         # Handle serialization and destroy.
         serializer = self.get_serializer(instance, data=request.data)
-        self.perform_destroy(serializer)
+        self.perform_destroy(instance)
 
         return Response(
             data={'status': 'success'},
             status=self.get_response_status_code()
         )
+
