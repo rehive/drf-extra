@@ -7,8 +7,7 @@ from . import mixins
 
 class BaseAPIView(GenericAPIView):
     """
-    Generic view with extended features for Rehive usage. All viewsets should
-    extend this class.
+    Generic view with extended features. All viewsets should extend this class.
     """
 
     # Modify the serializer classes used by the view based on the request

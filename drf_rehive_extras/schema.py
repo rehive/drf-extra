@@ -105,11 +105,6 @@ class Documentation:
         return all_docs
 
 
-# Initiate a global docs object that is used in swagger schema generation.
-# This value must be an instance of `Documentation`.
-ADDITIONAL_DOCS = Documentation()
-
-
 # Extensions
 
 class OneOfOpenApiSerializerExtensionMixin():
@@ -133,7 +128,7 @@ class OneOfOpenApiSerializerExtensionMixin():
 
 # Autoschema
 
-class RehiveAutoSchema(AutoSchema):
+class BaseAutoSchema(AutoSchema):
     """
     Custom extension of the drf-spectacular.AutoSchema to support automated
     documentation injection into the schema.
@@ -155,10 +150,12 @@ class RehiveAutoSchema(AutoSchema):
     def _get_view_docs(self):
         """
         Helper to get additional docs for a view.
+
+        A `Documentation` instance must be found in settings.ADDITIONAL_DOCS.
         """
 
         try:
-            docs = ADDITIONAL_DOCS.docs
+            docs = getattr(settings, 'ADDITIONAL_DOCS')
         except (NameError, AttributeError):
             return None
 
