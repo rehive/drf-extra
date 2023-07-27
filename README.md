@@ -36,9 +36,9 @@ INSTALLED_APPS = [
 
 ### Schema generation
 
-Use drf-spectacular to generate Open API schemas that match the Rehive eveloped request response format as defined by the drf-rehive-extras views/serializers.
+Use `drf-spectacular` to generate Open API schemas that match the Rehive eveloped request response format as defined by the `drf-rehive-extras` views/serializers.
 
-To use schema generation, install `drf-spectacular`:
+To use schema generation, install `drf-spectacular` (in addition to `drf-rehive-extras` as described above):
 
 ```sh
 pip install drf-spectacular[sidecar]
@@ -62,7 +62,7 @@ REST_FRAMEWORK = {
 }
 ```
 
-Additionally, the `schema.BaseAutoSchema` class includes functionality to attach
+The `schema.BaseAutoSchema` class also includes functionality to attach
 additional documentation to the schema via yaml files.
 
 To generate additional documentation, create a `docs.yaml` file in a `docs` folder in your Django app. The file should be formatted like this:
