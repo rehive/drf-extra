@@ -18,7 +18,7 @@ from drf_spectacular.utils import OpenApiResponse
 from drf_spectacular.extensions import OpenApiSerializerExtension
 from drf_spectacular.types import OpenApiTypes
 
-from .generics import BaseAPIView, ActionAPIView
+from .generics import BaseAPIView
 from .serializers import ActionResponseSerializer
 
 
