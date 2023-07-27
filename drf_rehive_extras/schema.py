@@ -1,7 +1,7 @@
 import os
 import yaml
 from logging import getLogger
-from collections import OrderedDict
+from functools import lru_cache
 
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
@@ -105,6 +105,17 @@ class Documentation:
         return all_docs
 
 
+@lru_cache(maxsize=None)
+def get_additional_documentation():
+    """
+    Method to get additional documentation.
+
+    Cache the result so it does not have to call it repeatedly.
+    """
+
+    return Documentation()
+
+
 # Extensions
 
 class OneOfOpenApiSerializerExtensionMixin():
@@ -155,7 +166,7 @@ class BaseAutoSchema(AutoSchema):
         """
 
         try:
-            docs = getattr(settings, 'ADDITIONAL_DOCS')
+            docs = get_additional_documentation().docs
         except (NameError, AttributeError):
             return None
 
