@@ -96,6 +96,20 @@ class BaseAPIView(GenericAPIView):
             return self.default_response_status_codes[self.request.method]
 
 
+class ActionAPIView(mixins.ActionMixin,
+                    BaseAPIView):
+    """
+    Concrete view for performing a generic action.
+    """
+
+    response_status_codes = {
+        "POST": status.HTTP_200_OK
+    }
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+
 class CreateAPIView(mixins.CreateModelMixin,
                     BaseAPIView):
     """

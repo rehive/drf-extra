@@ -29,7 +29,8 @@ setup(
         "djangorestframework>=3.13.1",
         "drf-flex-fields>=0.9.7",
         "django-filter>=21.0",
-        "django-enumfields>=2.1.1"
+        "django-enumfields>=2.1.1",
+        "drf-spectacular[sidecar]>=0.26.3"
     ],
     python_requires='>=3.6',
     classifiers=[
