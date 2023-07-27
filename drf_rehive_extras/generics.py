@@ -7,8 +7,7 @@ from . import mixins
 
 class BaseAPIView(GenericAPIView):
     """
-    Generic view with extended features for Rehive usage. All viewsets should
-    extend this class.
+    Generic view with extended features. All viewsets should extend this class.
     """
 
     # Modify the serializer classes used by the view based on the request
@@ -94,6 +93,20 @@ class BaseAPIView(GenericAPIView):
             return self.response_status_codes[self.request.method]
         except KeyError:
             return self.default_response_status_codes[self.request.method]
+
+
+class ActionAPIView(mixins.ActionMixin,
+                    BaseAPIView):
+    """
+    Concrete view for performing a generic action.
+    """
+
+    response_status_codes = {
+        "POST": status.HTTP_200_OK
+    }
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
 
 
 class CreateAPIView(mixins.CreateModelMixin,
