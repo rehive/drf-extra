@@ -12,8 +12,8 @@
 - Custom pagination that supports cursor and page based pagination.
 - Integrated support for flex fields and django filters.
 - Base serializers.
-- Metadata, timestamp and enum serializer fields.
-
+- Metadata, timestamp, and enum serializer fields.
+- Schema generation support via drf-spectacular.
 
 ## Getting started
 
@@ -36,7 +36,7 @@ INSTALLED_APPS = [
 
 ### Schema generation
 
-Use `drf-spectacular` to generate Open API schemas that match the Rehive eveloped request response format as defined by the `drf-rehive-extras` views/serializers.
+This library allows you to use `drf-spectacular` to generate Open API schemas that match the Rehive eveloped request/response format as defined by the `drf-rehive-extras` views/serializers.
 
 To use schema generation, install `drf-spectacular` (in addition to `drf-rehive-extras` as described above):
 
@@ -94,7 +94,7 @@ ADDITIONAL_DOCS_DIRS = [
 
 ### Pagination
 
-the `PageNumberPagination` and `CursorPagination` can be used to generate paginated lists that return the results enveloped in a parent `data` object (as per the Rehive standard).
+This library adds extra pagination via `PageNumberPagination` and `CursorPagination` that can be used to generate paginated lists that return the results in the Rehive eveloped request/response format.
 
 You can use them like this:
 
@@ -103,15 +103,79 @@ from drf_rehive_extras.pagination import PageNumberPagination
 
 class ExampleView(ListAPIView)
     pagination_class = PageNumberPagination
-
 ```
 
 These pagination classes will be automatically applied to any views that inherit from the `drf-rehive-extras` generics and mixins.
 
 ### Serializers
 
+This library includes base serializers that can be used to ensure all serializers share the same Rehive base:
+
+- `BaseModelSerializer` : A DRF `ModelSerializer` that includes `rest_flex_fields` functionality.
+- `ActionResponseSerializer` : A serializer that can be used to generate action responses.
 
 ### Serializers fields
 
+This library adds extra serializer fields that can be used in DRF serializers:
+
+- `MetadataField`
+- `TimestampField`
+- `EnumField`
+
+These fields can be used like normal serializer fields.
 
 ### Views
+
+This library includes a collection of generic views and mixins that can be used to ensure all views follow the same Rehive standard.
+
+The generic views can be used like this:
+
+```python
+from drf_rehive_extras.generics import ListAPIView
+
+class ListExampleModelView(ListAPIView):
+    serializer_class = ExampleModelSerializer
+
+    def get_queryset(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return ExampleModel.objects.none()
+
+        return ExampleModel.objects.all().order_by('-created')
+```
+
+The generic views allow for the customization of the serializer based on the method. This can be done by adding a `serializer_classes` attribute to the view:
+
+```python
+# Single shared request/response serializer.
+serializer_classes = {
+    "POST": ExampleModelRequestSerializer
+}
+
+# Multiple serializers, the first for the request and the second for the response.
+serializer_classes = {
+    "POST": (ExampleModelRequestSerializer, ExampleModelResponseSerializer,)
+}
+```
+
+The generic views also support explicitly modifying the response status for a given method. This can be done via the `response_status_codes` attribute.
+
+```python
+response_status_codes = {"POST": status.HTTP_202_ACCEPTED}
+```
+
+If possible, all generic views will attempt to add a `_resource` and `_resource_id` to the request object. This will only be done if there is a single model instance and the instance contains a `RESOURCE` and/or `RESOURCE_ID` attribute.
+
+Finally, in addition to the normal DRF generic views, the library contains an extra `ActionAPIView` that can be used for simple actions. These actions will default to a 200 response and will only ever return a `{"status": "success"}` response.
+
+Usage is as follows:
+
+```python
+from drf_rehive_extras.generics import ActionAPIView
+from drf_rehive_extras.serializers import ActionResponseSerializer
+
+class ExampleActionView(ActionAPIView):
+    serializer_class = ExampleActionSerializer
+    serializer_classes = {
+        "POST": (ExampleActionSerializer, ActionResponseSerializer,)
+    }
+```
