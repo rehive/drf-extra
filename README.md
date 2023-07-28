@@ -27,7 +27,7 @@ pip install drf-rehive-extras
 
 ```python
 INSTALLED_APPS = [
-    ...
+    # ...
     'drf_rehive_extras',
 ]
 ```
@@ -48,7 +48,7 @@ And add the following to the `INSTALLED_APPS` settings:
 
 ```python
 INSTALLED_APPS = [
-    ...
+    # ...
     'drf_spectacular',
     'drf_spectacular_sidecar',
 ]
