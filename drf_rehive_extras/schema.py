@@ -105,15 +105,8 @@ class Documentation:
         return all_docs
 
 
-@lru_cache(maxsize=None)
-def get_additional_documentation():
-    """
-    Method to get additional documentation.
-
-    Cache the result so it does not have to call it repeatedly.
-    """
-
-    return Documentation()
+# Create a module level singleton instance.
+additional_documentation = Documentation()
 
 
 # Extensions
@@ -166,7 +159,7 @@ class BaseAutoSchema(AutoSchema):
         """
 
         try:
-            docs = get_additional_documentation().docs
+            docs = additional_documentation.docs
         except (NameError, AttributeError):
             return None
 
