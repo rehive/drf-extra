@@ -215,6 +215,10 @@ class BaseAutoSchema(AutoSchema):
                 },
                 'data': schema
             },
+            'required': [
+                'status',
+                'data',
+            ]
         }
 
         # Generate a serializer name if one is not manually set.
