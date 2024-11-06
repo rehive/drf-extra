@@ -211,7 +211,6 @@ class BaseAutoSchema(AutoSchema):
             'properties': {
                 'status': {
                     'type': 'string',
-                    'example': 'success',
                 },
                 'data': schema
             },
